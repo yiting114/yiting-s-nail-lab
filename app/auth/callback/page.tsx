@@ -10,6 +10,12 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+      await supabase.auth.exchangeCodeForSession(code);
+    }
+
         console.log('🔄 開始驗證 Supabase OAuth 回傳資料...');
 
         // 1. 監聽狀態改變，或直接取得目前 session
