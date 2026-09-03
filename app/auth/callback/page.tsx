@@ -11,15 +11,21 @@ export default function AuthCallbackPage() {
     const handleAuthCallback = async () => {
       try {
 const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    if (code) {
-      await supabase.auth.exchangeCodeForSession(code);
-    }
+const code = urlParams.get('code');
 
+// 如果 URL 中有 code，直接向 Supabase 交換 Session 並取得回傳結果
+if (code) {
+  const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+  if (exchangeError) {
+    console.error('❌ 交換 Session 失敗:', exchangeError);
+  }
+}
         console.log('🔄 開始驗證 Supabase OAuth 回傳資料...');
 
         // 1. 監聽狀態改變，或直接取得目前 session
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // 給予 500 毫秒緩衝，確保 Cookie 寫入完畢後再抓取 Session
+await new Promise((resolve) => setTimeout(resolve, 500));
+const { data: { session }, error } = await supabase.auth.getSession();
 
         if (error) {
           console.error('❌ 取得 Session 失敗:', error);
