@@ -58,21 +58,21 @@ export default function AuthCallbackPage() {
             }
           }
 
-          // 3. 驗證完成，強迫跳轉到會員中心 (或預約頁)
-          console.log('🚀 準備跳轉至 /member...');
-          router.replace('/member');
-        } else {
-          console.warn('⚠️ 未找到 Session，嘗試再次檢查...');
-          // 如果當前沒抓到 session，稍等 1 秒後重試一次
-          setTimeout(async () => {
-            const { data: { session: retrySession } } = await supabase.auth.getSession();
-            if (retrySession) {
-              router.replace('/member');
-            } else {
-              router.replace('/login');
-            }
-          }, 1000);
-        }
+         // 3. 驗證完成，強制跳轉到會員中心 (或預約頁)
+console.log('🚀 準備跳轉至 /member...');
+window.location.href = '/member';
+} else {
+  console.warn('⚠️ 未找到 Session，嘗試再次檢查...');
+  // 給 LINE / Supabase 緩衝 2.5 秒時間寫入 session
+  setTimeout(async () => {
+    const { data: { session: retrySession } } = await supabase.auth.getSession();
+    if (retrySession) {
+      window.location.href = '/member';
+    } else {
+      window.location.href = '/login';
+    }
+  }, 2500);
+}
       } catch (err: any) {
         console.error('💥 Callback 發生異常未捕捉錯誤:', err);
         router.replace('/login');
