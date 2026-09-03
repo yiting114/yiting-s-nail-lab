@@ -22,7 +22,7 @@ export default function LoginPage() {
   // 2. LINE 登入
   const handleLineLogin = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: 'line' as any,
+      provider: 'custom:line' as any,
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
   };
