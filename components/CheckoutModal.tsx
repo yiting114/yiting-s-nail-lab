@@ -62,18 +62,30 @@ export default function CheckoutModal({
       if (profile) setUserPoints(profile.points || 0);
 
       // 載入優惠券
-      const { data: userCoupons } = await supabase
+const { data: userCoupons } = await supabase
   .from('user_coupons')
-  .select('coupons(id, code, discount_amount)')
+  .select(`
+    id,
+    is_used,
+    coupons (
+      id,
+      code,
+      discount_amount
+    )
+  `)
   .eq('user_id', user.id)
   .eq('is_used', false);
-  
-      if (userCoupons) {
-        const formatted = userCoupons
-          .map((item: any) => item.coupons)
-          .filter(Boolean);
-        setCoupons(formatted);
-      }
+
+if (userCoupons) {
+  const formatted = userCoupons
+    .filter((item: any) => item.coupons)
+    .map((item: any) => ({
+      id: item.id, // 使用 user_coupons 表本身的 id
+      code: item.coupons.code || '優惠折扣券',
+      discount_amount: item.coupons.discount_amount || 0,
+    }));
+  setCoupons(formatted as any);
+}
     };
 
     fetchUserRewards();
@@ -83,8 +95,8 @@ export default function CheckoutModal({
 
   // 計算折扣
   const selectedCoupon = coupons.find((c) => c.id === selectedCouponId);
-  const couponDiscount = selectedCoupon ? selectedCoupon.discount_amount : 0;
-  const totalDiscount = couponDiscount + usedPoints;
+const couponDiscount = selectedCoupon ? selectedCoupon.discount_amount : 0;
+const totalDiscount = couponDiscount + usedPoints;
   const finalTotalAmount = Math.max(0, service.price - totalDiscount);
   const remainingAtStore = Math.max(0, finalTotalAmount - DEPOSIT_AMOUNT);
 
@@ -210,9 +222,9 @@ export default function CheckoutModal({
               className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white"
             >
               <option value="">不使用折價券</option>
-              {coupons.map((item: any) => (
-  <option key={item.id} value={item.id}>
-    {item.coupons?.code || '專屬折價券'} (折抵 ${item.coupons?.discount_amount})
+{coupons.map((coupon: any) => (
+  <option key={coupon.id} value={coupon.id}>
+    {coupon.code} (折抵 ${coupon.discount_amount})
   </option>
 ))}
             </select>
