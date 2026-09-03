@@ -129,12 +129,7 @@ if (data.session) {
 
         {/* 快速第三方登入 */}
         <div className="space-y-2">
-          <button
-            onClick={handleLineLogin}
-            className="w-full py-2.5 bg-[#06C755] hover:bg-[#05b34c] text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-2"
-          >
-            💬 LINE 快速登入 / 註冊
-          </button>
+    
           <button
             onClick={handleGoogleLogin}
             className="w-full py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-2"
