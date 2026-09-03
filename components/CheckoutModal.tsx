@@ -62,28 +62,18 @@ export default function CheckoutModal({
       if (profile) setUserPoints(profile.points || 0);
 
       // 載入優惠券
+// 載入優惠券（直接向 coupons 資料表查詢）
 const { data: userCoupons } = await supabase
-  .from('user_coupons')
-  .select(`
-    id,
-    is_used,
-    coupons (
-      id,
-      code,
-      discount_amount
-    )
-  `)
-  .eq('user_id', user.id)
+  .from('coupons') // ⚠️ 將這裡改為您 Supabase 實際的表名
+  .select('id, discount_amount, is_used')
   .eq('is_used', false);
 
 if (userCoupons) {
-  const formatted = userCoupons
-    .filter((item: any) => item.coupons)
-    .map((item: any) => ({
-      id: item.id, // 使用 user_coupons 表本身的 id
-      code: item.coupons.code || '優惠折扣券',
-      discount_amount: item.coupons.discount_amount || 0,
-    }));
+  const formatted = userCoupons.map((item: any) => ({
+    id: item.id,
+    code: item.title || '優惠折扣券',
+    discount_amount: item.discount_amount || 0,
+  }));
   setCoupons(formatted as any);
 }
     };
@@ -168,7 +158,7 @@ const totalDiscount = couponDiscount + usedPoints;
       // 3. 標記優惠券已使用
       if (selectedCouponId) {
         await supabase
-          .from('user_coupons')
+          .from('coupons')
           .update({ status: 'used' })
           .eq('user_id', user.id)
           .eq('coupon_id', selectedCouponId);
