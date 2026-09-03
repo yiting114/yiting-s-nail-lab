@@ -63,11 +63,11 @@ export default function CheckoutModal({
 
       // 載入優惠券
       const { data: userCoupons } = await supabase
-        .from('user_coupons')
-        .select('coupons(id, code, discount_amount)')
-        .eq('user_id', user.id)
-        .eq('status', 'unused');
-
+  .from('user_coupons')
+  .select('coupons(id, code, discount_amount)')
+  .eq('user_id', user.id)
+  .eq('is_used', false);
+  
       if (userCoupons) {
         const formatted = userCoupons
           .map((item: any) => item.coupons)
@@ -210,11 +210,11 @@ export default function CheckoutModal({
               className="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white"
             >
               <option value="">不使用折價券</option>
-              {coupons.map((coupon) => (
-                <option key={coupon.id} value={coupon.id}>
-                  {coupon.code} (折抵 ${coupon.discount_amount})
-                </option>
-              ))}
+              {coupons.map((item: any) => (
+  <option key={item.id} value={item.id}>
+    {item.coupons?.code || '專屬折價券'} (折抵 ${item.coupons?.discount_amount})
+  </option>
+))}
             </select>
           </div>
 
